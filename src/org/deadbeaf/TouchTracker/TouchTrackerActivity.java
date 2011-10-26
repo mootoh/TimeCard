@@ -2,23 +2,31 @@ package org.deadbeaf.TouchTracker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class TouchTrackerActivity extends Activity {
+    private static final String PREFS_NAME = "org.deadbeaf.TouchTracker";
+    private SharedPreferences prefs;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = getSharedPreferences(PREFS_NAME, 0);
         handleIntent(getIntent());
     }
 
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            Log.e(getClass().getSimpleName(), "Unknown intent " + intent);
+            showMainWindow("");
             return;
         }
         Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -27,23 +35,59 @@ public class TouchTrackerActivity extends Activity {
         byte[] idBytes = tag.getId();
         if (idBytes == null)
             return;
-        String tagId = getHex(idBytes);
+
+        final String tagId = getHex(idBytes);
         Log.d(getClass().getSimpleName(), "tag id=" + tagId);
 
         if (isBrandnew(tagId)) {
-            setContentView(R.layout.main);
-            TextView textView = (TextView)findViewById(R.id.textView1);
+            Log.d(getClass().getSimpleName(), "brand new");
+
+            // show a form to input the name or something for this tag
+
+            setContentView(R.layout.newtag);
+            TextView textView = (TextView)findViewById(R.id.textView2);
             textView.setText(tagId);
+
+            final EditText editText = (EditText)findViewById(R.id.editText1);
+
+            final Button button = (Button)findViewById(R.id.button2);
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (editText.getText().equals(""))
+                        return;
+                    SharedPreferences.Editor editor = prefs.edit();
+                    Log.d("aa", "text = " + editText.getText().toString());
+                    editor.putString(tagId, editText.getText().toString());
+                    editor.commit();
+                }
+            });
         } else {
-            setContentView(R.layout.main);
+            Log.d(getClass().getSimpleName(), "already exist");
             String tagName = getTagName(tagId);
-            TextView textView = (TextView)findViewById(R.id.textView1);
-            textView.setText(tagName);
+
+            // does not have to show the view.
+            // enough to display the notification.
+            showMainWindow(tagName);
         }
     }
 
+    private void showMainWindow(String name) {
+        setContentView(R.layout.main);
+        setContentView(R.layout.main);
+        TextView textView = (TextView)findViewById(R.id.textView1);
+        textView.setText(name);
+        final Button button = (Button)findViewById(R.id.button1);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.commit();
+            }
+        });
+    }
+
     // from http://rgagnon.com/javadetails/java-0596.html
-    static final String HEXES = "0123456789ABCDEF";
+    private static final String HEXES = "0123456789ABCDEF";
     private String getHex(byte[] raw) {
         if (raw == null)
             return null;
@@ -54,10 +98,12 @@ public class TouchTrackerActivity extends Activity {
     }
 
     private boolean isBrandnew(final String tagName) {
-        return true;
+        String stored = prefs.getString(tagName, null);
+        return stored == null;
     }
 
     private String getTagName(final String tagId) {
-        return tagId;
+        String tagName = prefs.getString(tagId, null);
+        return tagName;
     }
 }
