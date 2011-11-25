@@ -2,7 +2,6 @@ package net.mootoh.TimeCard;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
@@ -11,15 +10,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-public class TouchTrackerActivity extends NavigationActivity {
-    private static final String PREFS_NAME = "org.deadbeaf.TouchTracker";
+public class TouchActivity extends NavigationActivity {
+    final String TAG;
+    private static final String PREFS_NAME = "net.mootoh.TouchTracker";
     private SharedPreferences prefs;
-    private boolean isTracking;
-    private ArrayList <String> tagHistory;
+    boolean isTracking;
+    ArrayList <String> tagHistory;
 
+    public TouchActivity() {
+        TAG = getClass().getSimpleName();
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,53 +36,24 @@ public class TouchTrackerActivity extends NavigationActivity {
         return history;
     }
 
-    private void saveTagHistory() {
-    }
-
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             showMainWindow("");
             return;
         }
-        Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        if (tag == null)
-            return;
-        byte[] idBytes = tag.getId();
-        if (idBytes == null)
-            return;
 
-        final String tagId = getHex(idBytes);
-        Log.d(getClass().getSimpleName(), "tag id=" + tagId);
+        final String tagId = getTagId(intent);
+        if (tagId == null) return;
 
         if (isBrandnew(tagId)) {
-            Log.d(getClass().getSimpleName(), "brand new");
-
-            // show a form to input the name or something for this tag
-
-            setContentView(R.layout.newtag);
-            TextView textView = (TextView)findViewById(R.id.textView2);
-            textView.setText(tagId);
-
-            final EditText editText = (EditText)findViewById(R.id.tagName);
-
-            final Button button = (Button)findViewById(R.id.saveName);
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (editText.getText().equals(""))
-                        return;
-                    SharedPreferences.Editor editor = prefs.edit();
-                    Log.d("aa", "text = " + editText.getText().toString());
-                    editor.putString(tagId, editText.getText().toString());
-
-                    editor.putBoolean("tracking", true);
-                    editor.commit();
-
-                    finish();
-                }
-            });
+            Log.d(TAG, "brand new");
+            Intent newTagIntent = new Intent();
+            newTagIntent.putExtra("tagId", tagId);
+            newTagIntent.setClass(this, NewTagActivity.class);
+            startActivity(newTagIntent);
         } else {
-            Log.d(getClass().getSimpleName(), "already exist");
+            Log.d(TAG, "already exist");
             String tagName = getTagName(tagId);
 
             if (tagId.equals(getLastTagId())) {
@@ -96,6 +69,22 @@ public class TouchTrackerActivity extends NavigationActivity {
             // enough to display the notification.
             showMainWindow(tagName);
         }
+    }
+
+    private String getTagId(Intent intent) {
+        Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        if (tag == null) {
+            Log.d(TAG, "Tag not found");
+            return null;
+        }
+
+        byte[] idBytes = tag.getId();
+        if (idBytes == null)
+            return null;
+
+        final String tagId = getHex(idBytes);
+        Log.d(TAG, "tag id=" + tagId);
+        return tagId;
     }
 
     private String getLastTagId() {

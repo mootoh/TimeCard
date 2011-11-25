@@ -25,16 +25,25 @@
             android:name=".SettingActivity"
             android:theme="@style/TimeCard" >
             <intent-filter >
-                <action android:name="android.nfc.action.VIEW" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".TouchTrackerActivity"
+            android:name=".TouchActivity"
             android:theme="@style/TimeCard" >
             <intent-filter >
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".NewTagActivity"
+            android:theme="@style/TimeCard" >
+            <intent-filter >
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
