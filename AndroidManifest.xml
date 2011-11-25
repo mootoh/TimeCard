@@ -7,13 +7,21 @@
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".TimeCardActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"
+                  android:theme="@style/TimeCard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TouchTrackerActivity">
+        <activity android:name=".SettingActivity"
+                  android:theme="@style/TimeCard">
+            <intent-filter>
+                <action android:name="android.nfc.action.VIEW"/>
+                <category android:name="android.intent.category.PREFERENCE"/>
+            </intent-filter>
+        </activity>
+            <activity android:name=".TouchTrackerActivity">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
