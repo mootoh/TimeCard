@@ -1,4 +1,4 @@
-package net.mootoh.TouchTracker;
+package net.mootoh.TimeCard;
 
 import java.util.ArrayList;
 
@@ -103,7 +103,6 @@ public class TouchTrackerActivity extends Activity {
 	}
 
 	private void showMainWindow(String name) {
-        setContentView(R.layout.main);
         setContentView(R.layout.main);
         final TextView textView = (TextView)findViewById(R.id.textView1);
         textView.setText(name);
