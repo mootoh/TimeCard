@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class TouchTrackerActivity extends Activity {
+public class TouchTrackerActivity extends NavigationActivity {
     private static final String PREFS_NAME = "org.deadbeaf.TouchTracker";
     private SharedPreferences prefs;
     private boolean isTracking;

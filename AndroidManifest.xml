@@ -30,7 +30,9 @@
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-        <activity android:name=".TouchTrackerActivity" >
+        <activity
+            android:name=".TouchTrackerActivity"
+            android:theme="@style/TimeCard" >
             <intent-filter >
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
 
