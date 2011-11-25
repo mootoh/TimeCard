@@ -1,4 +1,6 @@
-package org.deadbeaf.TouchTracker;
+package net.mootoh.TouchTracker;
+
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,15 +17,27 @@ import android.widget.TextView;
 public class TouchTrackerActivity extends Activity {
     private static final String PREFS_NAME = "org.deadbeaf.TouchTracker";
     private SharedPreferences prefs;
+    private boolean isTracking;
+    private ArrayList <String> tagHistory;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = getSharedPreferences(PREFS_NAME, 0);
+        isTracking = prefs.getBoolean("tracking", true);
+        tagHistory = getTagHistory();
         handleIntent(getIntent());
     }
 
-    private void handleIntent(Intent intent) {
+    private ArrayList<String> getTagHistory() {
+    	ArrayList<String> history = new ArrayList<String>();
+    	return history;
+	}
+
+    private void saveTagHistory() {
+    }
+
+	private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             showMainWindow("");
@@ -48,9 +62,9 @@ public class TouchTrackerActivity extends Activity {
             TextView textView = (TextView)findViewById(R.id.textView2);
             textView.setText(tagId);
 
-            final EditText editText = (EditText)findViewById(R.id.editText1);
+            final EditText editText = (EditText)findViewById(R.id.tagName);
 
-            final Button button = (Button)findViewById(R.id.button2);
+            final Button button = (Button)findViewById(R.id.saveName);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (editText.getText().equals(""))
@@ -58,23 +72,40 @@ public class TouchTrackerActivity extends Activity {
                     SharedPreferences.Editor editor = prefs.edit();
                     Log.d("aa", "text = " + editText.getText().toString());
                     editor.putString(tagId, editText.getText().toString());
+
+                    editor.putBoolean("tracking", true);
                     editor.commit();
+
+                    finish();
                 }
             });
         } else {
             Log.d(getClass().getSimpleName(), "already exist");
             String tagName = getTagName(tagId);
 
+            if (tagId.equals(getLastTagId())) {
+                SharedPreferences.Editor editor = prefs.edit();
+                boolean isTracking = ! prefs.getBoolean("tracking", true);
+                editor.putBoolean("tracking", isTracking);
+                if (isTracking) {
+                	
+                }
+            }
+            
             // does not have to show the view.
             // enough to display the notification.
             showMainWindow(tagName);
         }
     }
 
-    private void showMainWindow(String name) {
+    private String getLastTagId() {
+		return null;
+	}
+
+	private void showMainWindow(String name) {
         setContentView(R.layout.main);
         setContentView(R.layout.main);
-        TextView textView = (TextView)findViewById(R.id.textView1);
+        final TextView textView = (TextView)findViewById(R.id.textView1);
         textView.setText(name);
         final Button button = (Button)findViewById(R.id.button1);
         button.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +113,8 @@ public class TouchTrackerActivity extends Activity {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.clear();
                 editor.commit();
+
+                textView.setText("");
             }
         });
     }
