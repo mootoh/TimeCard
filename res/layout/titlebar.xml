@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="52dip"
-	android:gravity="center_vertical"
-    android:paddingLeft="5dip"
-    android:background="#336699">
-<TextView
-    android:id="@+id/titleLabel"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="4dip"
-    android:text="Time Card"
-    android:textSize="24sp"
-    android:textColor="#ffffff"
     android:background="#336699"
-/>
-<Button
-    android:id="@+id/settingButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="150dip"
-    android:layout_marginTop="2dip"
-    android:width="48dip"
-    android:height="48dip"
-    android:text="..."
-/>
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="5dip" >
+
+    <TextView
+        android:id="@+id/titleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dip"
+        android:background="#336699"
+        android:text="Time Card"
+        android:textColor="#ffffff"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/settingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dip"
+        android:layout_marginTop="2dip"
+        android:height="48dip"
+        android:text="..."
+        android:width="48dip" />
+
 </LinearLayout>

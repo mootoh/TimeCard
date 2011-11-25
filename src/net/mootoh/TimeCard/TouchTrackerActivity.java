@@ -30,14 +30,14 @@ public class TouchTrackerActivity extends Activity {
     }
 
     private ArrayList<String> getTagHistory() {
-    	ArrayList<String> history = new ArrayList<String>();
-    	return history;
-	}
+        ArrayList<String> history = new ArrayList<String>();
+        return history;
+    }
 
     private void saveTagHistory() {
     }
 
-	private void handleIntent(Intent intent) {
+    private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             showMainWindow("");
@@ -88,10 +88,10 @@ public class TouchTrackerActivity extends Activity {
                 boolean isTracking = ! prefs.getBoolean("tracking", true);
                 editor.putBoolean("tracking", isTracking);
                 if (isTracking) {
-                	
+
                 }
             }
-            
+
             // does not have to show the view.
             // enough to display the notification.
             showMainWindow(tagName);
@@ -99,10 +99,10 @@ public class TouchTrackerActivity extends Activity {
     }
 
     private String getLastTagId() {
-		return null;
-	}
+        return null;
+    }
 
-	private void showMainWindow(String name) {
+    private void showMainWindow(String name) {
         setContentView(R.layout.main);
         final TextView textView = (TextView)findViewById(R.id.textView1);
         textView.setText(name);

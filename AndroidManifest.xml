@@ -1,31 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.mootoh.TimeCard" android:versionCode="1"
-    android:versionName="1.0">
+    package="net.mootoh.TimeCard"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
     <uses-sdk android:minSdkVersion="10" />
+
     <uses-permission android:name="android.permission.NFC" />
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".TimeCardActivity"
-                  android:label="@string/app_name"
-                  android:theme="@style/TimeCard">
-            <intent-filter>
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <activity
+            android:label="@string/app_name"
+            android:name=".TimeCardActivity"
+            android:theme="@style/TimeCard" >
+            <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingActivity"
-                  android:theme="@style/TimeCard">
-            <intent-filter>
-                <action android:name="android.nfc.action.VIEW"/>
-                <category android:name="android.intent.category.PREFERENCE"/>
+        <activity
+            android:name=".SettingActivity"
+            android:theme="@style/TimeCard" >
+            <intent-filter >
+                <action android:name="android.nfc.action.VIEW" />
+
+                <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-            <activity android:name=".TouchTrackerActivity">
-            <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+        <activity android:name=".TouchTrackerActivity" >
+            <intent-filter >
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>
+
 </manifest>
