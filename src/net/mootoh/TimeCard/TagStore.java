@@ -49,12 +49,6 @@ public final class TagStore {
         return null;
     }
 
-    public void getTables() {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        Cursor cursor = db.query("tags", null, null, null, null, null, null, "1");
-        Log.d(getClass().getSimpleName(), "cursor count: " + cursor.getCount());
-    }
-
     public void reset() {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         db.delete("tags", null, null);
@@ -77,10 +71,28 @@ public final class TagStore {
             cursor.moveToNext();
             tags.add(tag);
         } while (cursor.moveToNext());
-        Log.d(getClass().getSimpleName(), "tag count = " + tags.size());
         Tag[] ret = new Tag[tags.size()];
         tags.toArray(ret);
         return ret;
+    }
+
+    private void addTouch(String tagId, int isOn) throws SQLException {
+        ContentValues values = new ContentValues();
+        values.put("tagId", tagId);
+        values.put("isOn", isOn);
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        long rowId = db.insert("touches", null, values);
+        if (rowId <= 0)
+            throw new SQLException("Faild to insert row for " + tagId);
+    }
+
+    public void startTag(String tagId) throws SQLException {
+        addTouch(tagId, 1);
+    }
+
+    public void stopTag(String tagId) throws SQLException {
+        addTouch(tagId, 0);
     }
 }
 
@@ -97,23 +109,21 @@ final class DatabaseHelper extends SQLiteOpenHelper {
         "create TABLE "
                 + "touches ("
                 + "tagId text not null primary key, "
-                + "touchedAt INTEGER not null, "
-                + "isON INTEGER not null"
+                + "touchedAt DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                + "isOn INTEGER not null"
                 + ");"};
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        Log.d(getClass().getSimpleName(), "ctor");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(getClass().getSimpleName(), "onCreate");
         try {
             for (String sql : DB_CREATE)
                 db.execSQL(sql);
         } catch (android.database.SQLException ex) {
-            Log.d(getClass().getSimpleName(), "exception in creating db: " + ex);
+            Log.e(getClass().getSimpleName(), "exception in creating db: " + ex);
         }
     }
 
