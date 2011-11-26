@@ -1,15 +1,12 @@
 package net.mootoh.TimeCard;
 
-import android.content.SharedPreferences;
-import android.util.Log;
+import java.sql.SQLException;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public final class NewTagActivity extends NavigationActivity {
-    private static final String PREFS_NAME = "net.mootoh.TouchTracker";
-
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,13 +24,12 @@ public final class NewTagActivity extends NavigationActivity {
                 if (editText.getText().equals(""))
                     return;
 
-                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-                SharedPreferences.Editor editor = prefs.edit();
-                Log.d("aa", "text = " + editText.getText().toString());
-                editor.putString(tagId, editText.getText().toString());
-
-                editor.putBoolean("tracking", true);
-                editor.commit();
+                TagStore tagStore = new TagStore(getApplicationContext());
+                try {
+                    tagStore.addTag(tagId, editText.getText().toString(), "#ff0000");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
                 finish();
             }
