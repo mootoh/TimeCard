@@ -56,4 +56,9 @@ public final class TagStoreTest extends AndroidTestCase {
         tagStore.deleteTag(TAG_ID);
         assertTrue(tagStore.isBrandNewTag(TAG_ID));
     }
+
+    public void testTagName() throws SQLException {
+        tagStore.addTag(TAG_ID, "My Tag", "#ff0000");
+        assertEquals("My Tag",tagStore.getTagName(TAG_ID));
+    }
 }

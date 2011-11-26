@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class TouchActivity extends NavigationActivity {
+public class TouchActivity extends android.app.Activity {
     final String TAG;
 
     public TouchActivity() {
@@ -38,15 +38,14 @@ public class TouchActivity extends NavigationActivity {
                 Log.e(TAG, "cannot stop the tag:" + currentTag.id);
                 finish();
             }
-            Toast.makeText(this, "stop tag", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, currentTag.name + " end.", Toast.LENGTH_SHORT).show();
         } else { // different tag
             if (tagStore.isBrandNewTag(tagId)) {
-                try {
-                    tagStore.addTag(tagId, "abc", "#00ff00");
-                } catch (SQLException e) {
-                    Log.e(TAG, "cannot add the tag:" + tagId);
-                    finish();
-                }
+                Intent newTagIntent = new Intent();
+                newTagIntent.putExtra("tagId", tagId);
+                newTagIntent.setClass(this, NewTagActivity.class);
+                startActivity(newTagIntent);
+                finish();
             }
             if (currentTag != null) {
                 try {
@@ -55,7 +54,7 @@ public class TouchActivity extends NavigationActivity {
                     Log.e(TAG, "Cannot stop the current tag:" + currentTag.id);
                     finish();
                 }
-                Toast.makeText(this, "stop tag", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, currentTag.name + " end.", Toast.LENGTH_SHORT).show();
             }
             try {
                 tagStore.startTag(tagId);
@@ -63,35 +62,10 @@ public class TouchActivity extends NavigationActivity {
                 Log.e(TAG, "Cannot start the tag:" + tagId);
                 finish();
             }
-//            Toast.makeText(this, "start tag", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, tagStore.getTagName(tagId) + " start.", Toast.LENGTH_SHORT).show();
         }
 
         finish();
-/*
-        if (isBrandnew(tagId)) {
-            Log.d(TAG, "brand new");
-            Intent newTagIntent = new Intent();
-            newTagIntent.putExtra("tagId", tagId);
-            newTagIntent.setClass(this, NewTagActivity.class);
-            startActivity(newTagIntent);
-        } else {
-            Log.d(TAG, "already exist");
-            String tagName = getTagName(tagId);
-
-            if (tagId.equals(getLastTagId())) {
-                SharedPreferences.Editor editor = prefs.edit();
-                boolean isTracking = ! prefs.getBoolean("tracking", true);
-                editor.putBoolean("tracking", isTracking);
-                if (isTracking) {
-
-                }
-            }
-
-            // does not have to show the view.
-            // enough to display the notification.
-            showMainWindow(tagName);
-        }
-*/
     }
 
     private String getTagId(Intent intent) {
@@ -110,23 +84,6 @@ public class TouchActivity extends NavigationActivity {
         return tagId;
     }
 
-/*
-    private void showMainWindow(String name) {
-        setContentView(R.layout.main);
-        final TextView textView = (TextView)findViewById(R.id.textView1);
-        textView.setText(name);
-        final Button button = (Button)findViewById(R.id.button1);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear();
-                editor.commit();
-
-                textView.setText("");
-            }
-        });
-    }
-*/
     // from http://rgagnon.com/javadetails/java-0596.html
     private static final String HEXES = "0123456789ABCDEF";
     private String getHex(byte[] raw) {

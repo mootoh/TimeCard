@@ -3,7 +3,7 @@ package net.mootoh.TimeCard;
 public final class TimeCardActivity extends NavigationActivity {
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState, R.layout.main);
 
         navigationButton.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {

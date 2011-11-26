@@ -34,7 +34,7 @@ public final class TagStore {
 
     public void deleteTag(String tagId) throws Exception {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        int deleted = db.delete("tags", "id is " + tagId, null);
+        int deleted = db.delete("tags", "id is '" + tagId + "'", null);
         if (deleted != 1)
             throw new Exception("Failed in deleting a tag:" + tagId);
     }
@@ -67,6 +67,15 @@ public final class TagStore {
                 }
             }
         }
+        return null;
+    }
+
+    public String getTagName(String tagId) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        String[] columns = { "name" };
+        Cursor cursor = db.query("tags", columns, "id is '" + tagId + "'", null, null, null, null);
+        if (cursor.moveToFirst())
+            return cursor.getString(cursor.getColumnIndex("name"));
         return null;
     }
 

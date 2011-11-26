@@ -2,6 +2,7 @@ package net.mootoh.TimeCard;
 
 import java.sql.SQLException;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,7 +10,7 @@ import android.widget.EditText;
 public final class NewTagActivity extends NavigationActivity {
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState, R.layout.newtag);
         titleLabel.setText("New Tag");
 
         final String tagId = getIntent().getStringExtra("tagId");
@@ -25,10 +26,11 @@ public final class NewTagActivity extends NavigationActivity {
                     return;
 
                 TagStore tagStore = new TagStore(getApplicationContext());
+
                 try {
                     tagStore.addTag(tagId, editText.getText().toString(), "#ff0000");
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    Log.e(getClass().getSimpleName(), "cannot add this tag:" + tagId);
                 }
 
                 finish();
