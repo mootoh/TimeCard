@@ -2,7 +2,7 @@
 <resources>
 
     <style name="TimeCardTitleBackground">
-        <item name="android:background">#003366</item>
+        <item name="android:background">#6699cc</item>
     </style>
 
     <style name="TimeCard" parent="android:Theme">

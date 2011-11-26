@@ -20,9 +20,12 @@ public final class TimeCardActivity extends NavigationActivity {
 
         TagStore tagStore = new TagStore(this);
         Tag currentTag = tagStore.currentTag();
-        String tagName = currentTag == null ? "No Tag" : currentTag.name;
+        String tagInfo = null;
+        if (currentTag != null) {
+            tagInfo = currentTag.name + ": last ON=" + currentTag.timeStamp.toString();
+        }
 
         android.widget.TextView currentTagNameTextView = (android.widget.TextView)findViewById(R.id.currentTagName);
-        currentTagNameTextView.setText(tagName);
+        currentTagNameTextView.setText(currentTag == null ? "No Tag" : tagInfo);
     }
 }

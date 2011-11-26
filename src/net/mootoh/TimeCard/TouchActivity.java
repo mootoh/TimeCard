@@ -23,11 +23,11 @@ public class TouchActivity extends android.app.Activity {
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            finish();
+            return;
         }
 
         final String tagId = getTagId(intent);
-        if (tagId == null) finish();
+        if (tagId == null) return;
 
         TagStore tagStore = new TagStore(this);
         Tag currentTag = tagStore.currentTag();
@@ -36,7 +36,7 @@ public class TouchActivity extends android.app.Activity {
                 tagStore.stopTag(currentTag.id);
             } catch (SQLException e) {
                 Log.e(TAG, "cannot stop the tag:" + currentTag.id);
-                finish();
+                return;
             }
             Toast.makeText(this, currentTag.name + " end.", Toast.LENGTH_SHORT).show();
         } else { // different tag
@@ -45,14 +45,14 @@ public class TouchActivity extends android.app.Activity {
                 newTagIntent.putExtra("tagId", tagId);
                 newTagIntent.setClass(this, NewTagActivity.class);
                 startActivity(newTagIntent);
-                finish();
+                return;
             }
             if (currentTag != null) {
                 try {
                     tagStore.stopTag(currentTag.id);
                 } catch (SQLException e) {
                     Log.e(TAG, "Cannot stop the current tag:" + currentTag.id);
-                    finish();
+                    return;
                 }
                 Toast.makeText(this, currentTag.name + " end.", Toast.LENGTH_SHORT).show();
             }
@@ -60,11 +60,10 @@ public class TouchActivity extends android.app.Activity {
                 tagStore.startTag(tagId);
             } catch (SQLException e) {
                 Log.e(TAG, "Cannot start the tag:" + tagId);
-                finish();
+                return;
             }
             Toast.makeText(this, tagStore.getTagName(tagId) + " start.", Toast.LENGTH_SHORT).show();
         }
-
         finish();
     }
 
