@@ -31,8 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TouchActivity"
-            android:theme="@style/TimeCard" >
+            android:name=".TouchActivity">
             <intent-filter >
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
 

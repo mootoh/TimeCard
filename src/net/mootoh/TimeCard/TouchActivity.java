@@ -1,23 +1,15 @@
 package net.mootoh.TimeCard;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.Toast;
 
 public class TouchActivity extends NavigationActivity {
     final String TAG;
-    private static final String PREFS_NAME = "net.mootoh.TouchTracker";
-    private SharedPreferences prefs;
-    boolean isTracking;
-    ArrayList <String> tagHistory;
 
     public TouchActivity() {
         TAG = getClass().getSimpleName();
@@ -25,27 +17,57 @@ public class TouchActivity extends NavigationActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = getSharedPreferences(PREFS_NAME, 0);
-        isTracking = prefs.getBoolean("tracking", true);
-        tagHistory = getTagHistory();
         handleIntent(getIntent());
-    }
-
-    private ArrayList<String> getTagHistory() {
-        ArrayList<String> history = new ArrayList<String>();
-        return history;
     }
 
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            showMainWindow("");
-            return;
+            finish();
         }
 
         final String tagId = getTagId(intent);
-        if (tagId == null) return;
+        if (tagId == null) finish();
 
+        TagStore tagStore = new TagStore(this);
+        Tag currentTag = tagStore.currentTag();
+        if (currentTag != null && currentTag.id.equals(tagId)) {
+            try {
+                tagStore.stopTag(currentTag.id);
+            } catch (SQLException e) {
+                Log.e(TAG, "cannot stop the tag:" + currentTag.id);
+                finish();
+            }
+            Toast.makeText(this, "stop tag", Toast.LENGTH_SHORT).show();
+        } else { // different tag
+            if (tagStore.isBrandNewTag(tagId)) {
+                try {
+                    tagStore.addTag(tagId, "abc", "#00ff00");
+                } catch (SQLException e) {
+                    Log.e(TAG, "cannot add the tag:" + tagId);
+                    finish();
+                }
+            }
+            if (currentTag != null) {
+                try {
+                    tagStore.stopTag(currentTag.id);
+                } catch (SQLException e) {
+                    Log.e(TAG, "Cannot stop the current tag:" + currentTag.id);
+                    finish();
+                }
+                Toast.makeText(this, "stop tag", Toast.LENGTH_SHORT).show();
+            }
+            try {
+                tagStore.startTag(tagId);
+            } catch (SQLException e) {
+                Log.e(TAG, "Cannot start the tag:" + tagId);
+                finish();
+            }
+//            Toast.makeText(this, "start tag", Toast.LENGTH_SHORT).show();
+        }
+
+        finish();
+/*
         if (isBrandnew(tagId)) {
             Log.d(TAG, "brand new");
             Intent newTagIntent = new Intent();
@@ -69,10 +91,11 @@ public class TouchActivity extends NavigationActivity {
             // enough to display the notification.
             showMainWindow(tagName);
         }
+*/
     }
 
     private String getTagId(Intent intent) {
-        Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        android.nfc.Tag tag = (android.nfc.Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag == null) {
             Log.d(TAG, "Tag not found");
             return null;
@@ -87,10 +110,7 @@ public class TouchActivity extends NavigationActivity {
         return tagId;
     }
 
-    private String getLastTagId() {
-        return null;
-    }
-
+/*
     private void showMainWindow(String name) {
         setContentView(R.layout.main);
         final TextView textView = (TextView)findViewById(R.id.textView1);
@@ -106,7 +126,7 @@ public class TouchActivity extends NavigationActivity {
             }
         });
     }
-
+*/
     // from http://rgagnon.com/javadetails/java-0596.html
     private static final String HEXES = "0123456789ABCDEF";
     private String getHex(byte[] raw) {
@@ -116,15 +136,5 @@ public class TouchActivity extends NavigationActivity {
         for (final byte b : raw)
             hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
         return hex.toString();
-    }
-
-    private boolean isBrandnew(final String tagName) {
-        String stored = prefs.getString(tagName, null);
-        return stored == null;
-    }
-
-    private String getTagName(final String tagId) {
-        String tagName = prefs.getString(tagId, null);
-        return tagName;
     }
 }

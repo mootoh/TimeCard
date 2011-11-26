@@ -13,4 +13,16 @@ public final class TimeCardActivity extends NavigationActivity {
             }
         });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        TagStore tagStore = new TagStore(this);
+        Tag currentTag = tagStore.currentTag();
+        String tagName = currentTag == null ? "No Tag" : currentTag.name;
+
+        android.widget.TextView currentTagNameTextView = (android.widget.TextView)findViewById(R.id.currentTagName);
+        currentTagNameTextView.setText(tagName);
+    }
 }

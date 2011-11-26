@@ -1,6 +1,7 @@
 package net.mootoh.TimeCard;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import net.mootoh.TimeCard.Tag;
@@ -38,13 +39,33 @@ public final class TagStore {
             throw new Exception("Failed in deleting a tag:" + tagId);
     }
 
-    public String currentTagId() {
+    public boolean isBrandNewTag(String tagId) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor cursor = db.query("touches", null, null, null, null, null, "touchedAt", "1");
+        Cursor cursor = db.query("tags", null, "id is '" + tagId + "'", null, null, null, null);
+        return cursor.getCount() == 0;
+    }
+
+    public Tag currentTag() {
+        final String query = "SELECT * FROM touches t1 INNER JOIN tags t2 ON t1.tagId=t2.id ORDER BY touchedAt DESC LIMIT 1";
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             int isOn = cursor.getInt(cursor.getColumnIndex("isOn"));
-            if (isOn == 1)
-                return cursor.getString(cursor.getColumnIndex("tagId"));
+            if (isOn == 1) {
+                try {
+                    Tag current = new Tag(
+                            cursor.getString(cursor.getColumnIndex("tagId")),
+                            cursor.getString(cursor.getColumnIndex("name")),
+                            cursor.getString(cursor.getColumnIndex("color")),
+                            cursor.getString(cursor.getColumnIndex("touchedAt")),
+                            true);
+                    return current;
+                } catch (ParseException e) {
+                    Log.e(getClass().getSimpleName(), "cannot parse the date format:" + cursor.getString(cursor.getColumnIndex("touchedAt")));
+                    return null;
+                }
+            }
         }
         return null;
     }
@@ -100,16 +121,14 @@ final class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION  = 1;
     private static final String DB_NAME  = "TimeCard";
     private static final String[] DB_CREATE = {
-        "create TABLE "
-                + "tags ("
+        "create TABLE tags ("
                 + "id TEXT not null primary key, "
                 + "name TEXT not null, "
                 + "color TEXT"
                 + ");",
-        "create TABLE "
-                + "touches ("
-                + "tagId text not null primary key, "
-                + "touchedAt DATETIME DEFAULT CURRENT_TIMESTAMP, "
+        "create TABLE touches ("
+                + "tagId text not null, "
+                + "touchedAt DATETIME DEFAULT CURRENT_TIMESTAMP PRIMARY KEY, "
                 + "isOn INTEGER not null"
                 + ");"};
 

@@ -27,22 +27,33 @@ public final class TagStoreTest extends AndroidTestCase {
         assertEquals(0, tagStore.getTags().length);
     }
 
-    public void testCurrentTagId() throws SQLException {
-        String currentTagId = tagStore.currentTagId();
-        assertNull(currentTagId);
+    public void testCurrentTag() throws SQLException {
+        Tag currentTag = tagStore.currentTag();
+        assertNull(currentTag);
     }
 
     public void testStartTag() throws SQLException {
         tagStore.addTag(TAG_ID, "My Tag", "#ff0000");
         tagStore.startTag(TAG_ID);
-        String currentTagId = tagStore.currentTagId();
-        assertEquals(TAG_ID, currentTagId);
+        Tag currentTag = tagStore.currentTag();
+        assertEquals(TAG_ID, currentTag.id);
+        assertEquals("My Tag", currentTag.name);
     }
 
     public void testStoptTag() throws SQLException {
         tagStore.addTag(TAG_ID, "My Tag", "#ff0000");
         tagStore.stopTag(TAG_ID);
-        String currentTagId = tagStore.currentTagId();
-        assertNotSame(TAG_ID, currentTagId);
+        Tag currentTag = tagStore.currentTag();
+        assertNull(currentTag);
+    }
+
+    public void testIsBrandNew() throws Exception {
+        assertTrue(tagStore.isBrandNewTag("000"));
+        tagStore.addTag(TAG_ID, "My Tag", "#ff0000");
+        assertTrue(tagStore.isBrandNewTag("000"));
+        assertFalse(tagStore.isBrandNewTag(TAG_ID));
+
+        tagStore.deleteTag(TAG_ID);
+        assertTrue(tagStore.isBrandNewTag(TAG_ID));
     }
 }
