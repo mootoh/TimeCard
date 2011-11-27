@@ -22,7 +22,7 @@ public class TouchActivity extends android.app.Activity {
 
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
-        if (! NfcAdapter.ACTION_TAG_DISCOVERED.equals(action))
+        if (! NfcAdapter.ACTION_TECH_DISCOVERED.equals(action))
             return;
 
         final String tagId = getTagId(intent);

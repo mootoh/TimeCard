@@ -6,10 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 public final class NewTagActivity extends NavigationActivity {
-   Button selected;
+    Button selected;
 
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
@@ -56,10 +55,8 @@ public final class NewTagActivity extends NavigationActivity {
                 }
             });
         }
-        Button bbb = new Button(this);
-        bbb.setText("bbb");
-        LinearLayout ll = (LinearLayout)findViewById(R.id.colorButtonLayout);
-        ll.addView(bbb);
+
+        selected = colorButtons[0].button;
     };
 
     class ColorButton {

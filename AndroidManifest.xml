@@ -30,13 +30,14 @@
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".TouchActivity">
+        <activity android:name=".TouchActivity" >
             <intent-filter >
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/filter_nfc" />
         </activity>
         <activity
             android:name=".NewTagActivity"
