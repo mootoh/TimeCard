@@ -4,7 +4,6 @@ import java.sql.SQLException;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 public final class NewTagActivity extends NavigationActivity {
@@ -19,8 +18,8 @@ public final class NewTagActivity extends NavigationActivity {
         setContentView(R.layout.newtag);
 
         final EditText editText = (EditText)findViewById(R.id.tagNameEdit);
-        final Button button = (Button)findViewById(R.id.saveNameButton);
-        button.setOnClickListener(new View.OnClickListener() {
+        navigationButton.setText("Save");
+        navigationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (editText.getText().equals(""))
                     return;

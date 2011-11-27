@@ -8,13 +8,53 @@
         android:id="@+id/tagNameEdit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp" android:hint="Context name for thie tag..."/>
+        android:layout_margin="16dp"
+        android:hint="Context name for thie tag..." />
 
-    <Button
-        android:id="@+id/saveNameButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Save" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="52dip"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
 
+        <Button
+            android:id="@+id/color1Button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="8px"
+            android:background="#ff7f00" />
+
+        <Button
+            android:id="@+id/color2Button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="8px"
+            android:layout_marginRight="8px"
+            android:background="#ff007f" />
+
+        <Button
+            android:id="@+id/color3Button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="8px"
+            android:layout_marginRight="8px"
+            android:background="#66ff66" />
+
+        <Button
+            android:id="@+id/color4Button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="8px"
+            android:layout_marginRight="8px"
+            android:background="#ffff66" />
+
+        <Button
+            android:id="@+id/color5Button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="8px"
+            android:background="#007fff" />
+    </LinearLayout>
 </LinearLayout>
