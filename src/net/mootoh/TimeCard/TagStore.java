@@ -176,7 +176,11 @@ public final class TagStore {
             String name = cursor.getString(cursor.getColumnIndex("name"));
             Date date = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
             String elapsed = getElapsedTime(curDate, date);
-            String[] pair = {name, elapsed};
+            String color= cursor.getString(cursor.getColumnIndex("color"));
+            Log.d(getClass().getSimpleName(), "color=" + color);
+            if (color.charAt(0) != '#')
+                color = '#' + color;
+            String[] pair = {name, elapsed, color};
             history.add(pair);
 
             curTagId = tagId;

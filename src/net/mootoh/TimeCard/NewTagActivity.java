@@ -38,11 +38,11 @@ public final class NewTagActivity extends NavigationActivity {
         });
 
         ColorButton[] colorButtons = {
-                new ColorButton((Button)findViewById(R.id.color1Button), "ff7700"),
-                new ColorButton((Button)findViewById(R.id.color2Button), "ff007f"),
-                new ColorButton((Button)findViewById(R.id.color3Button), "66ff66"),
-                new ColorButton((Button)findViewById(R.id.color4Button), "ffff66"),
-                new ColorButton((Button)findViewById(R.id.color5Button), "007fff"),
+                new ColorButton((Button)findViewById(R.id.color1Button), "#ff7700"),
+                new ColorButton((Button)findViewById(R.id.color2Button), "#ff007f"),
+                new ColorButton((Button)findViewById(R.id.color3Button), "#66ff66"),
+                new ColorButton((Button)findViewById(R.id.color4Button), "#ffff66"),
+                new ColorButton((Button)findViewById(R.id.color5Button), "#007fff"),
         };
 
         for (ColorButton colorButton : colorButtons) {

@@ -137,9 +137,9 @@ public final class TimeCardActivity extends NavigationActivity {
                 tagHistoryView = (TagHistoryView)convertView;
             }
             updateHistory();
-            tagHistoryView.tagColorView.setBackgroundColor(Color.parseColor("#ff7f00"));
             tagHistoryView.tagNameView.setText(histories.get(position)[0]);
             tagHistoryView.tagElapsedView.setText(histories.get(position)[1]);
+            tagHistoryView.tagColorView.setBackgroundColor(Color.parseColor(histories.get(position)[2]));
             return tagHistoryView;
         }
     }
