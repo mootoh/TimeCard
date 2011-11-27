@@ -37,9 +37,9 @@ public final class TimeCardActivity extends NavigationActivity {
 
         String history = "";
         try {
-            String[] histories = tagStore.getHistoryAll();
-            for (String hist : histories)
-                history += hist + "\n";
+            java.util.ArrayList <String[]> histories = tagStore.getHistoryAll();
+            for (String[] hist : histories)
+                history += hist[0] + ": " + hist[1] + "\n";
         } catch (Exception e) {
             android.util.Log.e(getClass().getSimpleName(), "failed in getting history");
         }
