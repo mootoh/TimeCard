@@ -35,6 +35,7 @@ public class TouchActivity extends android.app.Activity {
             newTagIntent.putExtra("tagId", tagId);
             newTagIntent.setClass(this, NewTagActivity.class);
             startActivity(newTagIntent);
+            finish();
             return;
         }
 
@@ -58,7 +59,7 @@ public class TouchActivity extends android.app.Activity {
     private String getTagId(Intent intent) {
         android.nfc.Tag tag = (android.nfc.Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag == null) {
-            Log.d(TAG, "Tag not found");
+            Log.w(TAG, "Tag not found");
             return null;
         }
 
@@ -67,7 +68,7 @@ public class TouchActivity extends android.app.Activity {
             return null;
 
         final String tagId = getHex(idBytes);
-        Log.d(TAG, "tag id=" + tagId);
+        Log.w(TAG, "tag id=" + tagId);
         return tagId;
     }
 

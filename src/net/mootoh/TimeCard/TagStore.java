@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
@@ -18,7 +19,8 @@ import android.util.Log;
 
 public final class TagStore {
     DatabaseHelper databaseHelper;
-    final static private String VOID_TAG_ID = "VOID";
+    final static public String VOID_TAG_ID   = "VOID";
+    final static public String VOID_TAG_NAME = "VOID";
 
     public TagStore(Context context) {
         databaseHelper = new DatabaseHelper(context);
@@ -59,19 +61,17 @@ public final class TagStore {
         Tag returnTag = null;
 
         if (cursor.moveToFirst()) {
-            String tagId = cursor.getString(cursor.getColumnIndex("tagId"));
             String touchedAt = cursor.getString(cursor.getColumnIndex("touchedAt"));
-            Log.d(getClass().getSimpleName(), "------- id=" + tagId + ", time=" + touchedAt);
 
             try {
                 Tag current = new Tag(
-                        tagId,
+                        cursor.getString(cursor.getColumnIndex("tagId")),
                         cursor.getString(cursor.getColumnIndex("name")),
                         cursor.getString(cursor.getColumnIndex("color")),
                         touchedAt);
                 returnTag = current;
             } catch (ParseException e) {
-                Log.e(getClass().getSimpleName(), "cannot parse the date format:" + cursor.getString(cursor.getColumnIndex("touchedAt")));
+                Log.e(getClass().getSimpleName(), "cannot parse the date format:" + touchedAt);
             }
         }
         cursor.close();
@@ -100,7 +100,7 @@ public final class TagStore {
         // void tag is permanent
         ContentValues values = new ContentValues();
         values.put("id", VOID_TAG_ID);
-        values.put("name", "void");
+        values.put("name", VOID_TAG_NAME);
         values.put("color", "#999999");
 
         long rowId = db.insert("tags", null, values);
@@ -124,9 +124,6 @@ public final class TagStore {
 
         ArrayList <Tag> tags = new ArrayList<Tag>();
         while (cursor.moveToNext()) {
-            Log.d(getClass().getSimpleName(),
-                     "name:" + cursor.getString(cursor.getColumnIndex("name"))
-                    + " id:" + cursor.getString(cursor.getColumnIndex("id")));
             Tag tag = new Tag(cursor.getString(cursor.getColumnIndex("id")),
                     cursor.getString(cursor.getColumnIndex("name")),
                     cursor.getString(cursor.getColumnIndex("color")));
@@ -158,15 +155,17 @@ public final class TagStore {
     }
 
     public ArrayList <String[]> getHistoryAll() throws Exception {
-        final String query = "SELECT * FROM touches t1 INNER JOIN tags t2 ON t1.tagId=t2.id ORDER BY t1.touchedAt DESC";
+        final String query = "SELECT * FROM touches t1 INNER JOIN tags t2 ON t1.tagId=t2.id ORDER BY t1.touchedAt ASC";
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         ArrayList <String[]> history = new ArrayList<String[]>();
 
         cursor.moveToFirst();
-        String curTagId   = cursor.getString(cursor.getColumnIndex("tagId"));
-        Date curDate = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
+        String curTagId = cursor.getString(cursor.getColumnIndex("tagId"));
+        String curName  = cursor.getString(cursor.getColumnIndex("name"));
+        Date   curDate  = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
+        String curColor = cursor.getString(cursor.getColumnIndex("color"));
 
         while (cursor.moveToNext()) {
             String tagId = cursor.getString(cursor.getColumnIndex("tagId"));
@@ -174,19 +173,25 @@ public final class TagStore {
                 throw new Exception("Logic Error: a tagId should not be consequential");
 
             String name = cursor.getString(cursor.getColumnIndex("name"));
-            Date date = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
+            Date date   = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
             String elapsed = getElapsedTime(curDate, date);
             String color= cursor.getString(cursor.getColumnIndex("color"));
-            Log.d(getClass().getSimpleName(), "color=" + color);
             if (color.charAt(0) != '#')
                 color = '#' + color;
-            String[] pair = {name, elapsed, color};
-            history.add(pair);
+
+            if (! curTagId.equals(VOID_TAG_ID)) {
+                String[] pair = {curName, elapsed, curColor};
+                history.add(pair);
+            }
 
             curTagId = tagId;
-            curDate = date;
+            curName  = name;
+            curDate  = date;
+            curColor = color;
         }
+
         cursor.close();
+        Collections.reverse(history);
 
         return history;
     }
@@ -199,9 +204,9 @@ public final class TagStore {
     }
 
     private String getElapsedTime(java.util.Date from, java.util.Date to) {
-        long lastTime = to.getTime();
-        long curTime  = from.getTime();
-        long elapsed = (curTime - lastTime);
+        long toTime = to.getTime();
+        long fromTime  = from.getTime();
+        long elapsed = (toTime - fromTime);
 
         long elapsedHour = elapsed / (60*60*1000);
         elapsed -= elapsedHour * (60*60*1000);
@@ -227,7 +232,7 @@ final class DatabaseHelper extends SQLiteOpenHelper {
                 + "tagId text not null, "
                 + "touchedAt DATETIME DEFAULT CURRENT_TIMESTAMP PRIMARY KEY"
                 + ");",
-        "insert into tags (id, name, color) values ('VOID_TAG_ID', 'void', '999999');",
+        "insert into tags (id, name, color) values ('VOID_TAG_ID', 'VOID', '999999');",
         "insert into touches (tagId) values ('VOID_TAG_ID');"
     };
 

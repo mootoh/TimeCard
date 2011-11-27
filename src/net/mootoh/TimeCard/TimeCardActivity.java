@@ -32,25 +32,30 @@ public final class TimeCardActivity extends NavigationActivity {
         });
 
         ListView listView = (ListView)findViewById(R.id.historyList);
+        TextView listHeader = new TextView(this);
+        listHeader.setText("History");
+        listView.addHeaderView(listHeader);
         tagHistoryAdapter = new TagHistoryAdapter(this, tagStore);
         listView.setAdapter(tagHistoryAdapter);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        tagHistoryAdapter.notifyDataSetChanged();
-
+        tagHistoryAdapter.update();
         displayCurrentTag();
     }
 
     private void displayCurrentTag() {
         Tag currentTag = tagStore.currentTag();
         String tagInfo = "No Tag";
-        if (currentTag != null) {
+        if (! currentTag.id.equals(TagStore.VOID_TAG_ID)) {
             tagInfo  = currentTag.name;
             tagInfo += ":  " + getElapsedTime(currentTag.timeStamp);
         }
+        TextView textView = (TextView)findViewById(R.id.currentTag);
+        textView.setText(tagInfo);
     }
 
     private String getElapsedTime(java.util.Date currentDate) {
@@ -105,6 +110,12 @@ public final class TimeCardActivity extends NavigationActivity {
         public TagHistoryAdapter(Context context, TagStore tagStore) {
             context_  = context;
             tagStore_ = tagStore;
+            histories = new ArrayList<String[]>();
+        }
+
+        public void update() {
+            updateHistory();
+            notifyDataSetChanged();
         }
 
         private void updateHistory() {
@@ -116,12 +127,10 @@ public final class TimeCardActivity extends NavigationActivity {
         }
 
         public int getCount() {
-            updateHistory();
             return histories.size();
         }
 
         public Object getItem(int position) {
-            updateHistory();
             return histories.get(position);
         }
 
@@ -136,7 +145,6 @@ public final class TimeCardActivity extends NavigationActivity {
             } else {
                 tagHistoryView = (TagHistoryView)convertView;
             }
-            updateHistory();
             tagHistoryView.tagNameView.setText(histories.get(position)[0]);
             tagHistoryView.tagElapsedView.setText(histories.get(position)[1]);
             tagHistoryView.tagColorView.setBackgroundColor(Color.parseColor(histories.get(position)[2]));

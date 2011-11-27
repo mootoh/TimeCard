@@ -49,7 +49,6 @@ public final class NewTagActivity extends NavigationActivity {
             colorButton.button.setTag(colorButton.color);
             colorButton.button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Log.d(getClass().getSimpleName(), "touched: ");
                     // unselect current selected
                     selected = (Button)v;
                 }
