@@ -35,8 +35,17 @@ public final class TimeCardActivity extends NavigationActivity {
             tagInfo += ":  " + getElapsedTime(currentTag.timeStamp);
         }
 
+        String history = "";
+        try {
+            String[] histories = tagStore.getHistoryAll();
+            for (String hist : histories)
+                history += hist + "\n";
+        } catch (Exception e) {
+            android.util.Log.e(getClass().getSimpleName(), "failed in getting history");
+        }
+
         android.widget.TextView currentTagNameTextView = (android.widget.TextView)findViewById(R.id.currentTagName);
-        currentTagNameTextView.setText(tagInfo);
+        currentTagNameTextView.setText(tagInfo + "\n" + history);
     }
 
     private String getElapsedTime(java.util.Date currentDate) {

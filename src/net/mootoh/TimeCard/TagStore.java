@@ -2,7 +2,10 @@ package net.mootoh.TimeCard;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import net.mootoh.TimeCard.Tag;
 
@@ -152,6 +155,59 @@ public final class TagStore {
 
     public void stopCurrentTag() throws SQLException {
         addTouch(VOID_TAG_ID);
+    }
+
+    public String[] getHistoryAll() throws Exception {
+        final String query = "SELECT * FROM touches t1 INNER JOIN tags t2 ON t1.tagId=t2.id ORDER BY t1.touchedAt DESC";
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList <String> history = new ArrayList<String>();
+
+        cursor.moveToFirst();
+        String curTagId   = cursor.getString(cursor.getColumnIndex("tagId"));
+        Date curDate = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
+
+        while (cursor.moveToNext()) {
+            String tagId = cursor.getString(cursor.getColumnIndex("tagId"));
+            if (curTagId == tagId)
+                throw new Exception("Logic Error: a tagId should not be consequential");
+
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            Date date = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
+            String elapsed = getElapsedTime(curDate, date);
+            history.add(name + "----" + elapsed);
+
+            curTagId = tagId;
+            curDate = date;
+        }
+        cursor.close();
+
+        String[] ret = new String[history.size()];
+        history.toArray(ret);
+        return ret;
+    }
+
+    private Date parseDate(String dateString) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleTimeZone tz = new SimpleTimeZone(0, "GMT");
+        formatter.setTimeZone(tz);
+        return formatter.parse(dateString);
+    }
+
+    private String getElapsedTime(java.util.Date from, java.util.Date to) {
+        long lastTime = to.getTime();
+        long curTime  = from.getTime();
+        long elapsed = (curTime - lastTime);
+
+        long elapsedHour = elapsed / (60*60*1000);
+        elapsed -= elapsedHour * (60*60*1000);
+
+        long elapsedMin = elapsed / (60*1000);
+        elapsed -= elapsedMin * 60*1000;
+        long elapsedSec = elapsed / 1000;
+
+        return String.format("%02d:%02d:%02d", elapsedHour, elapsedMin, elapsedSec);
     }
 }
 
