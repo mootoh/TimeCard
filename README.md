@@ -7,4 +7,4 @@ Screenshot
 ----------
 
 ![History](https://img.skitch.com/20111127-jqy21xcn8x2yihesf95sra1eff.jpg)
-![Adding a tag](https://img.skitch.com/20111127-x6ak7w23a9mrx7tcei4bm5keuj.jpg)
+![Adding a tag](https://img.skitch.com/20111127-crgy3fbxjeci3p3ssx41jpj63r.jpg)
