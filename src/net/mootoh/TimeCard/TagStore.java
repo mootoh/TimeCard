@@ -157,12 +157,12 @@ public final class TagStore {
         addTouch(VOID_TAG_ID);
     }
 
-    public String[] getHistoryAll() throws Exception {
+    public ArrayList <String[]> getHistoryAll() throws Exception {
         final String query = "SELECT * FROM touches t1 INNER JOIN tags t2 ON t1.tagId=t2.id ORDER BY t1.touchedAt DESC";
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        ArrayList <String> history = new ArrayList<String>();
+        ArrayList <String[]> history = new ArrayList<String[]>();
 
         cursor.moveToFirst();
         String curTagId   = cursor.getString(cursor.getColumnIndex("tagId"));
@@ -176,16 +176,15 @@ public final class TagStore {
             String name = cursor.getString(cursor.getColumnIndex("name"));
             Date date = parseDate(cursor.getString(cursor.getColumnIndex("touchedAt")));
             String elapsed = getElapsedTime(curDate, date);
-            history.add(name + "----" + elapsed);
+            String[] pair = {name, elapsed};
+            history.add(pair);
 
             curTagId = tagId;
             curDate = date;
         }
         cursor.close();
 
-        String[] ret = new String[history.size()];
-        history.toArray(ret);
-        return ret;
+        return history;
     }
 
     private Date parseDate(String dateString) throws ParseException {
