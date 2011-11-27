@@ -1,6 +1,12 @@
 package net.mootoh.TimeCard;
 
 public final class TimeCardActivity extends NavigationActivity {
+    final TagStore tagStore;
+
+    public TimeCardActivity() {
+        tagStore = new TagStore(this);
+    }
+
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.main);
@@ -22,16 +28,15 @@ public final class TimeCardActivity extends NavigationActivity {
     }
 
     private void displayCurrentTag() {
-        TagStore tagStore = new TagStore(this);
         Tag currentTag = tagStore.currentTag();
-        String tagInfo = null;
+        String tagInfo = "No Tag";
         if (currentTag != null) {
             tagInfo  = currentTag.name;
             tagInfo += ":  " + getElapsedTime(currentTag.timeStamp);
         }
 
         android.widget.TextView currentTagNameTextView = (android.widget.TextView)findViewById(R.id.currentTagName);
-        currentTagNameTextView.setText(tagInfo == null ? "No Tag" : tagInfo);
+        currentTagNameTextView.setText(tagInfo);
     }
 
     private String getElapsedTime(java.util.Date currentDate) {

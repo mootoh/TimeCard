@@ -1,5 +1,7 @@
 package net.mootoh.TimeCard;
 
+import java.sql.SQLException;
+
 public final class SettingActivity extends NavigationActivity {
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
@@ -11,7 +13,12 @@ public final class SettingActivity extends NavigationActivity {
         button.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
                 TagStore tagStore = new TagStore(that);
-                tagStore.reset();
+                try {
+                    tagStore.reset();
+                } catch (SQLException e) {
+                    android.util.Log.e(getClass().getSimpleName(), "failed in resetting database");
+                    return;
+                }
             }
         });
     }

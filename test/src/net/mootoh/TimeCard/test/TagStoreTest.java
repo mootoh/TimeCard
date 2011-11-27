@@ -8,28 +8,38 @@ import android.test.AndroidTestCase;
 
 public final class TagStoreTest extends AndroidTestCase {
     TagStore tagStore;
+    String TAG = "TagStoreTest";
     final String TAG_ID = "777";
 
     public void setUp() {
         tagStore = new TagStore(getContext());
-        tagStore.reset();
+        try {
+            tagStore.reset();
+        } catch (SQLException e) {
+            android.util.Log.e(getClass().getSimpleName(), "failed in resetting database");
+        }
     }
 
     public void testAddDeleteTag() throws Exception {
-        assertEquals(0, tagStore.getTags().length);
+        assertEquals(1, tagStore.getTags().length);
+
         tagStore.addTag(TAG_ID, "My Tag", "#ff0000");
-
         Tag[] tags = tagStore.getTags();
-        assertEquals(1, tags.length);
+        assertEquals(2, tags.length);
+        assertEquals(TAG_ID, tags[1].id);
 
-        assertEquals(TAG_ID, tags[0].id);
+        tagStore.addTag("another tag", "another", "#00ff00");
+        tags = tagStore.getTags();
+        assertEquals(3, tags.length);
+        assertEquals("another tag", tags[2].id);
+
         tagStore.deleteTag(TAG_ID);
-        assertEquals(0, tagStore.getTags().length);
+        assertEquals(2, tagStore.getTags().length);
     }
 
     public void testCurrentTag() throws SQLException {
         Tag currentTag = tagStore.currentTag();
-        assertNull(currentTag);
+        assertEquals("VOID", currentTag.id);
     }
 
     public void testStartTag() throws SQLException {
@@ -40,11 +50,12 @@ public final class TagStoreTest extends AndroidTestCase {
         assertEquals("My Tag", currentTag.name);
     }
 
-    public void testStoptTag() throws SQLException {
+    public void testStoptTag() throws SQLException, InterruptedException {
         tagStore.addTag(TAG_ID, "My Tag", "#ff0000");
-        tagStore.stopTag(TAG_ID);
+        Thread.sleep(1000);
+        tagStore.stopCurrentTag();
         Tag currentTag = tagStore.currentTag();
-        assertNull(currentTag);
+        assertEquals("VOID", currentTag.id);
     }
 
     public void testIsBrandNew() throws Exception {
