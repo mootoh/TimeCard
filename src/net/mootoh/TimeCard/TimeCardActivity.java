@@ -32,12 +32,13 @@ public final class TimeCardActivity extends NavigationActivity {
         });
 
         ListView listView = (ListView)findViewById(R.id.historyList);
+
         TextView listHeader = new TextView(this);
         listHeader.setText("History");
         listView.addHeaderView(listHeader);
+
         tagHistoryAdapter = new TagHistoryAdapter(this, tagStore);
         listView.setAdapter(tagHistoryAdapter);
-
     }
 
     @Override
